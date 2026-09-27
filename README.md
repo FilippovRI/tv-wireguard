@@ -1,69 +1,79 @@
 # TV WireGuard
 
-Android TV клиент WireGuard: full tunnel через домашний Keenetic, UI под пульт, автозапуск при включении ТВ и кнопка «YouTube через VPN».
+Android TV клиент [WireGuard](https://www.wireguard.com/): весь трафик телевизора через домашний Keenetic, UI под пульт, автозапуск при включении ТВ и кнопка «YouTube через VPN».
 
-## Как это работает (важно)
+## Скачать APK
+
+Готовый APK — на странице [Releases](https://github.com/FilippovRI/tv-wireguard/releases):
+
+1. Откройте последний релиз
+2. Скачайте `tv-wireguard-*.apk`
+3. Установите на Android TV:
+
+```bat
+adb connect TV_IP:5555
+adb install -r tv-wireguard-1.0.0.apk
+```
+
+APK debug-подписан (для sideload). Для магазина приложений нужна отдельная release-подпись.
+
+## Возможности
+
+- Full tunnel WireGuard (`AllowedIPs = 0.0.0.0/0`)
+- Интерфейс под D-pad / пульт Android TV
+- Автоподключение после включения ТВ
+- Кнопка **YouTube через VPN** (поднять туннель → открыть YouTube TV)
+- Поддержка Always-on VPN в настройках системы
+- Импорт peer-конфига `.conf`
+
+## Как это работает
 
 Это **не** «открыть IP:порт и Keenetic куда-то перенаправит HTTP».
-
-Схема такая:
 
 ```
 ТВ (другая квартира)
   └─ WireGuard UDP → ВНЕШНИЙ_IP:ПОРТ
-        └─ Keenetic (проброс UDP или встроенный WG-сервер)
-              └─ туннель поднят → весь трафик ТВ выходит с домашнего IP
+        └─ Keenetic (встроенный WG-сервер или UDP-проброс на ПК)
+              └─ туннель поднят → трафик ТВ выходит с домашнего IP
 ```
 
-На Keenetic нужен **WireGuard server** (встроенный в прошивку — лучший вариант) либо WG на ПК + UDP port forward на этот ПК.
+На Keenetic нужен **WireGuard server** (лучше встроенный в прошивку) либо WG на ПК + UDP port forward.
 
 ## Keenetic (сервер)
 
-1. Интернет → Другие подключения → WireWireGuard / WireGuard → добавить сервер.
+1. Интернет → Другие подключения → WireGuard → добавить сервер.
 2. Создать peer для телевизора, скачать/скопировать клиентский `.conf`.
 3. В peer для ТВ:
    - `Endpoint = ваш.ddns.или.ip:порт` (внешний адрес дома)
    - `AllowedIPs = 0.0.0.0/0` (весь трафик)
    - `PersistentKeepalive = 25` (NAT у соседей)
-4. Если WG крутится на ПК, а не на Keenetic: в Keenetic пробросьте **UDP** порт на IP ПК.
-5. Откройте UDP-порт на внешнем интерфейсе / не блокируйте его файрволом провайдера.
+4. Если WG на ПК: в Keenetic пробросьте **UDP** порт на IP ПК.
+5. Не блокируйте UDP-порт файрволом / провайдером.
 
-DDNS на Keenetic желателен, если внешний IP домашний плавающий.
+DDNS на Keenetic желателен при плавающем внешнем IP.
 
-## Сборка APK
-
-Нужны Android Studio (Ladybug+) и JDK 17.
-
-1. Откройте папку `tv-wireguard` в Android Studio.
-2. Дождитесь Gradle Sync.
-3. Build → Build Bundle(s) / APK(s) → Build APK(s).
-4. APK: `app/build/outputs/apk/debug/app-debug.apk`.
-
-Установка на ТВ:
-
-```bat
-adb connect TV_IP:5555
-adb install -r app-debug.apk
-```
+Шаблон: [`docs/sample-peer.conf`](docs/sample-peer.conf).
 
 ## Первый запуск на ТВ
 
-1. Откройте **TV WireGuard**.
-2. Разрешите VPN.
-3. **Конфиг WireGuard** → вставьте peer `.conf` → Сохранить.
-4. Включите «Автозапуск VPN при включении ТВ».
-5. (Рекомендуется) Настройки Android TV → Сеть → VPN → Always-on для этого приложения.
-6. Кнопка **YouTube через VPN**: поднимает туннель и открывает YouTube TV.
+1. Откройте **TV WireGuard** и разрешите VPN.
+2. **Конфиг WireGuard** → вставьте peer `.conf` → Сохранить.
+3. Включите «Автозапуск VPN при включении ТВ».
+4. (Рекомендуется) Настройки Android TV → Сеть → VPN → Always-on.
+5. **YouTube через VPN** — подключение и запуск YouTube TV.
 
-Вставку конфига удобнее сделать так: скопировать текст на телефон/ПК с клавиатурой, либо временно вставить через `adb`:
+## Сборка из исходников
+
+Нужны JDK 17 и Android SDK.
 
 ```bat
-adb shell
-run-as com.tvwireguard.app
+./gradlew assembleDebug
 ```
 
-Либо просто вставить пультом/клавиатурой в поле конфига.
+APK: `app/build/outputs/apk/debug/app-debug.apk`.
 
-## Шаблон конфига
+Релизный APK собирается GitHub Actions при теге `v*` или через workflow **Build and Release**.
 
-См. `docs/sample-peer.conf`.
+## Лицензия
+
+Код приложения — для личного/домашнего использования. Библиотека туннеля WireGuard — Apache 2.0.
