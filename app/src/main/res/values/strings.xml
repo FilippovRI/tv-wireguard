@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV WireGuard</string>
+    <string name="status_idle">Отключено</string>
+    <string name="status_connecting">Подключение…</string>
+    <string name="status_connected">Подключено — трафик через дом</string>
+    <string name="status_disconnecting">Отключение…</string>
+    <string name="status_error">Ошибка: %1$s</string>
+    <string name="btn_connect">Подключить VPN</string>
+    <string name="btn_disconnect">Отключить</string>
+    <string name="btn_youtube">YouTube через VPN</string>
+    <string name="btn_config">Конфиг WireGuard</string>
+    <string name="btn_back">Назад</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="btn_template">Шаблон</string>
+    <string name="auto_boot">Автозапуск VPN при включении ТВ</string>
+    <string name="hint_always_on">Для режима Always-on: Настройки → Сеть → VPN → TV WireGuard → всегда включён.</string>
+    <string name="config_title">Конфиг peer</string>
+    <string name="config_help">Endpoint = внешний IP/DDNS Keenetic и UDP-порт WireGuard. AllowedIPs = 0.0.0.0/0 для всего трафика.</string>
+    <string name="config_hint">[Interface] …</string>
+    <string name="config_missing">Конфиг ещё не задан</string>
+    <string name="config_ready">Конфиг сохранён</string>
+    <string name="config_empty">Вставьте полный .conf</string>
+    <string name="config_invalid">Неверный конфиг: %1$s</string>
+    <string name="config_saved">Сохранено</string>
+    <string name="vpn_permission_denied">Без разрешения VPN туннель не поднять</string>
+    <string name="youtube_missing">YouTube TV не найден на устройстве</string>
+    <string name="notif_channel">VPN</string>
+    <string name="notif_title">TV WireGuard</string>
+    <string name="notif_text">Туннель активен</string>
+</resources>
